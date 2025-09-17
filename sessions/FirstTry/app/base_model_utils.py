@@ -1,15 +1,13 @@
 import streamlit as st
 import base64
 import re
-from openai import OpenAI
+from . import config
 
-
-openai_api_key = "sk-proj-lNVSqo4gdKCJ4uZbruSOT3BlbkFJeCGgdIZtDoudFkWAGWf4"
-
-# Initialize OpenAI client
-client = OpenAI(api_key=openai_api_key)
+client = config.get_openai_client()
 
 def call_chat_model(client, messages):
+    if client is None:
+        raise RuntimeError("OpenAI client not configured. Set OPENAI_API_KEY.")
     return client.chat.completions.create(
         model="gpt-4o",
         messages=messages,
@@ -25,6 +23,8 @@ def call_image_model(client, file):
     base64_image = base64.b64encode(image_data).decode('utf-8')
 
     # Create API request
+    if client is None:
+        raise RuntimeError("OpenAI client not configured. Set OPENAI_API_KEY.")
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[

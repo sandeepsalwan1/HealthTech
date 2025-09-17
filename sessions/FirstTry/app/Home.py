@@ -1,33 +1,21 @@
 import hmac
 import streamlit as st
-from openai import OpenAI
+from . import config
+from . import ui
 
 st.set_page_config(layout="wide")
-
-# Hardcoded API keys (for testing only)
-openai_api_key = "sk-proj-lNVSqo4gdKCJ4uZbruSOT3BlbkFJeCGgdIZtDoudFkWAGWf4"
-tavily_api_key = "tvly"
-
-# Debug statements
-# st.write(f"OPENAI_API_KEY: {openai_api_key}")
-# st.write(f"TAVILY_API_KEY: {tavily_api_key}")
-
-if not openai_api_key:
-    st.error("OPENAI_API_KEY is not set")
-if not tavily_api_key:
-    st.error("TAVILY_API_KEY is not set")
-
-# Initialize OpenAI client
-client = OpenAI(api_key=openai_api_key)
+ui.inject_global_css()
 
 def check_password():
     """Returns `True` if the user had a correct password."""
 
-    # Hardcoded usernames and passwords for testing
-    passwords = {
-        "username": "password",
-        "user": "password",
-    }
+    # Demo login if allowed
+    if config.ALLOW_DEMO_LOGIN:
+        st.session_state["password_correct"] = True
+        return True
+
+    # Hardcoded user list for local testing only (when demo not allowed)
+    passwords = {"username": "password", "user": "password"}
 
     def login_form():
         """Form with widgets to collect user information"""
@@ -56,23 +44,12 @@ def check_password():
     login_form()
     return False
 
-# Header
-title = "myfitnessagent"
-logo_path = "/Users/sandeep/Downloads/CodeRunner1/logo.png"
-
-col1_header, col2_header = st.columns([1, 10])
-
-with col1_header:
-    st.image(logo_path, width=100)
-
-# Display the title in the second column
-with col2_header:
-    st.title(title)
+ui.render_brand_header()
 
 st.write("")
 
 # Set up the main app page
-st.subheader("Welcome to myfitnessagent")
+st.subheader("Welcome to HealthTech")
 
 col1_auth, col2_auth = st.columns([1, 2])
 
@@ -92,9 +69,9 @@ st.write(f"You have been authenticated.")
 st.write("Select your agent from the sidebar to begin.")
 
 st.subheader("Agents available:")
-st.write("1. Event Finder [ReAct]")  # Finds nearby races or sports events
-st.write("2. Health Plan [CoT FSP]")  # Creates a health plan
-st.write("3. Service Search [RAG]")  # Finds available plans
+st.write("1. Event Finder [ReAct]")
+st.write("2. Health Plan [CoT FSP]")
+st.write("3. Service Search [RAG]")
 
 # Add a logout button
 if st.button('Logout'):

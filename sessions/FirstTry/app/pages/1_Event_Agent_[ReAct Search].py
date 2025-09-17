@@ -1,16 +1,14 @@
 import streamlit as st
-from openai import OpenAI
 import requests
-
-# client = OpenAI()
-client = OpenAI(api_key="sk-proj-lNVSqo4gdKCJ4uZbruSOT3BlbkFJeCGgdIZtDoudFkWAGWf4")
-
+from .. import config
+from .. import ui
 
 st.set_page_config(layout="wide")
+ui.inject_global_css()
 
 # Header
-title = "myfitnessagent"
-logo_path = "/Users/sandeep/Downloads/CodeRunner1/logo.png"
+title = config.APP_NAME
+logo_path = config.get_logo_path()
 
 if "event_response" not in st.session_state:
     st.session_state.event_response = ""
@@ -18,7 +16,8 @@ if "event_response" not in st.session_state:
 col1, col2 = st.columns([1, 10])
 
 with col1:
-    st.image(logo_path, width=100)
+    if logo_path:
+        st.image(logo_path, width=100)
 
 # Display the title in the second column
 with col2:
@@ -31,7 +30,7 @@ if (st.session_state.get("password_correct") == None) or (st.session_state.get("
     st.stop()
 
 # Set up the main app page
-st.subheader("Welcome to HealthTech - discover your next local athletic event!")
+st.subheader("Discover your next local athletic event!")
 st.write("For example, I can help you find a 10k marathon event at San Francisco in August.")
 
 
@@ -49,7 +48,7 @@ if submit_button:
         }
     
     with st.spinner(f'Looking for {location} {event_type} in {time_frame}...'):
-        response = requests.post("http://localhost:8000/event", json=payload).json()
+        response = requests.post(f"{config.BACKEND_URL}/event", json=payload).json()
         st.session_state.event_response = response["response"]
     
 # display output
