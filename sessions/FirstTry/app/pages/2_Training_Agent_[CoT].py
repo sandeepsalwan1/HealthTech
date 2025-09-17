@@ -1,21 +1,22 @@
 import streamlit as st
 import prompts
 import re
-from openai import OpenAI
-from base_model_utils import call_chat_model, call_image_model
-
-client = OpenAI(api_key="sk-proj-lNVSqo4gdKCJ4uZbruSOT3BlbkFJeCGgdIZtDoudFkWAGWf4")
+from .. import config
+from .. import ui
+from ..base_model_utils import call_chat_model, call_image_model
 
 st.set_page_config(layout="wide")
+ui.inject_global_css()
 
 # Header
-title = "HealthTech"
-logo_path = "/Users/sandeep/Downloads/CodeRunner1/logo.png"
+title = config.APP_NAME
+logo_path = config.get_logo_path()
 
 col1, col2 = st.columns([1, 10])
 
 with col1:
-    st.image(logo_path, width=100)
+    if logo_path:
+        st.image(logo_path, width=100)
 
 # Display the title in the second column
 with col2:
